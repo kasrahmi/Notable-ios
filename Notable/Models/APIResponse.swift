@@ -17,15 +17,27 @@ struct RegisterRequest: Codable {
     let username: String
     let password: String
     let email: String
-    let first_name: String
-    let last_name: String
+    let firstName: String
+    let lastName: String
+    
+    enum CodingKeys: String, CodingKey {
+        case username, password, email
+        case firstName = "first_name"
+        case lastName = "last_name"
+    }
 }
 
 struct RegisterResponse: Codable {
     let username: String
     let email: String
-    let first_name: String
-    let last_name: String
+    let firstName: String
+    let lastName: String
+    
+    enum CodingKeys: String, CodingKey {
+        case username, email
+        case firstName = "first_name"
+        case lastName = "last_name"
+    }
 }
 
 struct TokenRequest: Codable { 

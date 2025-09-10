@@ -6,6 +6,7 @@ final class AuthViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
     @Published var connectionStatus: String = "Unknown"
+    @Published var registrationSuccess: Bool = false
 
     func bootstrapAuthenticationState() {
         isAuthenticated = AuthService.shared.isLoggedIn()
@@ -39,10 +40,12 @@ final class AuthViewModel: ObservableObject {
 
     func register(username: String, password: String, email: String, firstName: String, lastName: String) {
         errorMessage = nil
+        registrationSuccess = false
         isLoading = true
         Task { @MainActor in
             do {
                 try await AuthService.shared.register(username: username, password: password, email: email, firstName: firstName, lastName: lastName)
+                registrationSuccess = true
             } catch {
                 errorMessage = (error as? APIErrorResponse)?.detail ?? error.localizedDescription
             }

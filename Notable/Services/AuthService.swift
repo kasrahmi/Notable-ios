@@ -20,7 +20,7 @@ final class AuthService {
     }
 
     func register(username: String, password: String, email: String, firstName: String, lastName: String) async throws {
-        let req = RegisterRequest(username: username, password: password, email: email, first_name: firstName, last_name: lastName)
+        let req = RegisterRequest(username: username, password: password, email: email, firstName: firstName, lastName: lastName)
         let body = try JSONEncoder().encode(req)
         let request = URLRequest.authorized(path: "auth/register/", method: "POST", body: body)
         _ = try await NetworkManager.shared.perform(request, decode: RegisterResponse.self)
