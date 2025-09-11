@@ -20,9 +20,11 @@ struct HomeView: View {
             addFab
         }
         .sheet(item: $selectedForEdit) { note in
-            NoteEditView(note: note) { updated in
+            NoteEditView(note: note, onSave: { updated in
                 viewModel.updateNote(id: updated.id, title: updated.title, description: updated.description)
-            }
+            }, onDelete: { noteId in
+                viewModel.deleteNote(id: noteId)
+            })
         }
         .sheet(isPresented: $showEditor) {
             NoteEditView(note: nil) { created in

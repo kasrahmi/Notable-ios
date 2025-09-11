@@ -3,14 +3,17 @@ import SwiftUI
 struct NoteEditView: View {
     var note: Note?
     var onSave: (Note) -> Void
+    var onDelete: ((String) -> Void)?
     @Environment(\.dismiss) private var dismiss
 
     @State private var title: String = ""
     @State private var description: String = ""
+    @State private var showDeleteAlert = false
 
-    init(note: Note?, onSave: @escaping (Note) -> Void) {
+    init(note: Note?, onSave: @escaping (Note) -> Void, onDelete: ((String) -> Void)? = nil) {
         self.note = note
         self.onSave = onSave
+        self.onDelete = onDelete
         _title = State(initialValue: note?.title ?? "")
         _description = State(initialValue: note?.description ?? "")
     }
@@ -59,7 +62,25 @@ struct NoteEditView: View {
                     .frame(minHeight: 160)
                     .padding(.top, 4)
 
-                Spacer(minLength: 0)
+                Spacer(minLength: 20)
+
+                // Delete button - BIG AND VISIBLE
+                if let note = note {
+                    Button(action: { showDeleteAlert = true }) {
+                        VStack {
+                            Image(systemName: "trash")
+                                .font(.title2)
+                            Text("DELETE NOTE")
+                                .font(.headline)
+                                .fontWeight(.bold)
+                        }
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(Color.red)
+                        .cornerRadius(12)
+                    }
+                }
 
                 // Bottom row: last edited (if available)
                 if let updatedAt = (note?.updatedAt ?? Date()).formattedTime() {
@@ -72,6 +93,17 @@ struct NoteEditView: View {
                 }
             }
             .padding(16)
+        }
+        .alert("Delete Note", isPresented: $showDeleteAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
+                if let note = note {
+                    onDelete?(note.id)
+                    dismiss()
+                }
+            }
+        } message: {
+            Text("Are you sure you want to delete this note? This action cannot be undone.")
         }
     }
 
