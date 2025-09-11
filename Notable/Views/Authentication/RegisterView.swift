@@ -43,6 +43,16 @@ struct RegisterView: View {
         }
         .padding()
         .onReceive(authViewModel.$errorMessage) { _ in }
+        .onAppear {
+            // Reset registration state and clear form when entering Register screen
+            authViewModel.registrationSuccess = false
+            authViewModel.errorMessage = nil
+            username = ""
+            email = ""
+            password = ""
+            firstName = ""
+            lastName = ""
+        }
     }
 }
 

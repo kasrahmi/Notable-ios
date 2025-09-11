@@ -30,8 +30,15 @@ struct HomeView: View {
             }
         }
         .sheet(item: $selectedForDetail) { note in
-            NoteDetailView(note: note)
-                .environmentObject(viewModel)
+            NavigationStack {
+                NoteDetailView(note: note)
+                    .environmentObject(viewModel)
+            }
+        }
+        .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
+            Button("OK") { viewModel.errorMessage = nil }
+        } message: {
+            Text(viewModel.errorMessage ?? "")
         }
         .navigationTitle(viewModel.isSearchActive ? "Search Results" : "Notes")
         .navigationBarTitleDisplayMode(.large)
@@ -65,7 +72,7 @@ struct HomeView: View {
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 12) {
                         ForEach(viewModel.notes) { note in
-                            NoteCardView(note: note) { selectedForDetail = note }
+                            NoteCardView(note: note) { selectedForEdit = note }
                         }
                     }
                 }

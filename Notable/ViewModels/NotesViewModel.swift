@@ -23,7 +23,7 @@ final class NotesViewModel: ObservableObject {
         do {
             // Load from local first
             let local = try PersistenceController.shared.fetchNotes()
-            self.allNotes = local
+            self.allNotes = try await filterNotesForCurrentUser(local)
             if self.searchQuery.isEmpty {
                 self.notes = local
                 self.isSearchActive = false
@@ -35,7 +35,8 @@ final class NotesViewModel: ObservableObject {
             // Sync from network
             let remote = try await NotesService.shared.fetchNotes()
             for note in remote { try? PersistenceController.shared.upsert(note) }
-            self.allNotes = try PersistenceController.shared.fetchNotes()
+            let all = try PersistenceController.shared.fetchNotes()
+            self.allNotes = try await filterNotesForCurrentUser(all)
             if self.searchQuery.isEmpty {
                 self.notes = self.allNotes
                 self.isSearchActive = false
@@ -47,6 +48,23 @@ final class NotesViewModel: ObservableObject {
             errorMessage = error.localizedDescription
         }
         isLoading = false
+    }
+
+    private func filterNotesForCurrentUser(_ notes: [Note]) async throws -> [Note] {
+        do {
+            let user = try await AuthService.shared.getUserInfo()
+            let filtered = notes.filter { note in
+                // Prefer server-sent creatorUsername when available
+                if let creator = note.creatorUsername, !creator.isEmpty {
+                    return creator == user.username
+                }
+                // If missing, we cannot reliably determine ownership; default to include
+                return true
+            }
+            return filtered
+        } catch {
+            return notes
+        }
     }
 
     private func observeSearchQuery() {

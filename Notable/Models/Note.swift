@@ -8,6 +8,7 @@ struct Note: Identifiable, Equatable, Codable {
     var backgroundColorHex: String
     let createdAt: Date
     var updatedAt: Date
+    var creatorUsername: String?
 
     var backgroundColor: Color {
         Color(hex: backgroundColorHex)

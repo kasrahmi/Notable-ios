@@ -46,6 +46,9 @@ final class AuthViewModel: ObservableObject {
             do {
                 try await AuthService.shared.register(username: username, password: password, email: email, firstName: firstName, lastName: lastName)
                 registrationSuccess = true
+                // Auto-login after successful registration for seamless experience
+                try await AuthService.shared.login(username: username, password: password)
+                isAuthenticated = true
             } catch {
                 errorMessage = (error as? APIErrorResponse)?.detail ?? error.localizedDescription
             }
@@ -56,6 +59,9 @@ final class AuthViewModel: ObservableObject {
     func logout() {
         AuthService.shared.logout()
         isAuthenticated = false
+        // Reset registration state so Register screen starts fresh next time
+        registrationSuccess = false
+        errorMessage = nil
     }
 }
 

@@ -14,7 +14,8 @@ final class NotesService {
                 description: dto.description,
                 backgroundColorHex: Note.randomColorHex(),
                 createdAt: ISO8601DateFormatter().date(from: dto.created_at) ?? Date(),
-                updatedAt: ISO8601DateFormatter().date(from: dto.updated_at) ?? Date()
+                updatedAt: ISO8601DateFormatter().date(from: dto.updated_at) ?? Date(),
+                creatorUsername: dto.creator_username
             )
         }
         return notes

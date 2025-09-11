@@ -36,7 +36,7 @@ final class AuthService {
             let last_name: String 
         }
         let dto: UserDTO = try await NetworkManager.shared.perform(request, decode: UserDTO.self)
-        return User(id: String(dto.id), email: dto.email, createdAt: Date())
+        return User(id: String(dto.id), username: dto.username, email: dto.email, createdAt: Date())
     }
 
     func changePassword(current: String, new: String) async throws {

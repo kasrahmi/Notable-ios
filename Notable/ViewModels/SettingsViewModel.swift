@@ -18,13 +18,17 @@ final class SettingsViewModel: ObservableObject {
     }
 
     func changePassword(current: String, new: String) {
+        errorMessage = nil
+        passwordChangeMessage = nil
         isLoading = true
         Task { @MainActor in
             defer { isLoading = false }
             do {
                 try await AuthService.shared.changePassword(current: current, new: new)
                 passwordChangeMessage = "Password changed successfully"
-            } catch { errorMessage = error.localizedDescription }
+            } catch { 
+                errorMessage = (error as? APIErrorResponse)?.detail ?? error.localizedDescription 
+            }
         }
     }
 }
