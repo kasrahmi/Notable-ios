@@ -42,10 +42,10 @@ struct NoteDetailView: View {
     private func updateLastEditedText() {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm"
-        let when = max(note.createdAt, note.updatedAt)
         // If updatedAt equals createdAt (no edits yet), show created time
-        let displayDate: Date = (note.updatedAt > note.createdAt) ? note.updatedAt : note.createdAt
-        lastEditedText = (note.updatedAt > note.createdAt)
+        let hasEdits = note.updatedAt.timeIntervalSince1970 > note.createdAt.timeIntervalSince1970 + 1 // allow small parsing diffs
+        let displayDate: Date = hasEdits ? note.updatedAt : note.createdAt
+        lastEditedText = hasEdits
             ? "Last edited on \(formatter.string(from: displayDate))"
             : "Created on \(formatter.string(from: displayDate))"
     }
